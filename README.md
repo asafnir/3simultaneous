@@ -1,4 +1,5 @@
 # 3simultaneous
+Payment transaction service that can perform a minimum of 3 simultaneous Stellar payment transactions from one source account to three different destination accounts.
 
 ## Configuration
 You will need to generate accounts with a balance of 10,000 XLM [here](https://www.stellar.org/laboratory/#account-creator?network=test) to use for testing and running the code.
