@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Form, Icon, Input, Button, Row, Col } from 'antd';
+import { Form, Button, Row, Col } from 'antd';
 
 import AccountInput from './shared/AccountInput';
 import AmountInput from './shared/AmountInput';
@@ -54,15 +54,15 @@ export default class TransactionsForm extends React.Component<IProps, IState> {
 
     public render() {
         const { transactionObject } = this.state;
-        const canSend = () => transactionObject.amountToSend && transactionObject.destinationAccounts.every(a => a.length != 0 )
+        const canSend = () => transactionObject.amountToSend && transactionObject.destinationAccounts.every(a => a.length !== 0 )
         
         return (
         <Col span={12} offset = {6} >
             <div style={{background: '#fff', padding: 10, marginBottom: 10, overflow: 'scroll'}}>
                 <p>Test accounts</p>
-                <p>GDBW4MKLP3BNQXVF6KDWCFY2OF2NDAKXD62NC6HRGWKJEVCIYAFHNJF4</p>
-                <p>GCTT2EC4CQM6DV7F2WSF7D6QBB2G3ELM4BSQ2AZEULW2WSDGMHGSPVVZ</p>
-                <p>GCZDQTCCPBCPRYY6DFGNMD42CIM26FCLXNB64N3J3YGN27N4VB3W3K4T</p>
+                <p>GB4XWPQ4O3C33CJGMUDVACWGVNSALTEZYPFXYGG7PG6NMYKENFLIOBTJ</p>
+                <p>GD5ICAQAHPNJN5LUQJF6W5HH3T7QPUKZMV436WIPTGH6TNXFWKEBKJUA</p>
+                <p>GC5HEY4BY7ANJYJ2I7XGWXXJFM6SQT4D2AMQDPDBGSRAIN3KVLXTJ37L</p>
             </div>
             <Form onSubmit={this.onSubmit}>
                 { transactionObject.destinationAccounts.map( (account, index: number) => {

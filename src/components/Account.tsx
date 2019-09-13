@@ -1,7 +1,6 @@
 
 import React, { FunctionComponent, useState, useEffect  } from 'react';
-import { Input } from 'antd';
-import { getAccount } from '../vendor/Stellar'
+import { getAccount, PUBLIC_KEY } from '../vendor/Stellar'
 
 interface Balances {
     balance: string
@@ -21,8 +20,7 @@ const Account: FunctionComponent<IProps> = (props: any) => {
     const [account, setAccount] = useState<IAccount>(initialUserData);
 
     async function fetchAccount() {
-        const account = await getAccount()
-        console.log(account)
+        const account = await getAccount(PUBLIC_KEY)
         setAccount(account)
     }
 

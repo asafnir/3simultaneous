@@ -1,5 +1,4 @@
 import StellarSdk from 'stellar-sdk';
-import { ok } from 'assert';
 
 const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 StellarSdk.Network.useTestNetwork();
@@ -19,44 +18,54 @@ const transaction = async (transactionObject: transactionObject) => {
     const channelAccounts = Array();
     const { destinationAccounts, amountToSend  } = transactionObject;
     const fee = await server.fetchBaseFee();
+    const baseAccount = await getAccount(PUBLIC_KEY);
+    
     for( var i=0; i < destinationAccounts.length; i++) {
         // Create keypair 
         const pair = await StellarSdk.Keypair.random();
         // Create account
         const res = await creatingChannelAccount(pair);
+        const channelAccount = await getAccount(pair.publicKey())
+        
         if (res) {
-            channelAccounts.push({secretKey: pair.secret(), publicKey: pair.publicKey()})
+            channelAccounts.push({account: channelAccount, secretKey: pair.secret()})
         } else {
             throw('Was problem with the transaction')
         }
     }
-    const account = await server.loadAccount(PUBLIC_KEY);
-
+    
     destinationAccounts.map( async(destinationAccount, index) => { 
-        var transaction = new StellarSdk.TransactionBuilder(channelAccounts[index].publicKey, {fee})
+        console.log(destinationAccount)
+        var transaction = new StellarSdk.TransactionBuilder(baseAccount.id, {fee})
         .addOperation(StellarSdk.Operation.payment({
-            source: account.id,
+            source: baseAccount.id,
             destination: destinationAccount,
             asset: StellarSdk.Asset.native(),
             amount: amountToSend
         }))
         .setTimeout(180)
         .build();
-
-        transaction.sign(SECRET_KEY);
-        transaction.sign(channelAccounts[index].secretKey);
-    })
-    
+        
+        transaction.sign(StellarSdk.Keypair.fromSecret(SECRET_KEY));
+        transaction.sign(StellarSdk.Keypair.fromSecret(channelAccounts[index].secretKey));
+    });
 }
 
-const getAccount = async () => {
-    return await server.loadAccount(PUBLIC_KEY);
+const getAccount = async (key: string) => {
+    return await server.loadAccount(key);
 }
 
+// const es = server.payments()
+//   .cursor('now')
+//   .stream({
+//     onmessage: (message: any) => {
+//       console.log(message);
+//     }
+// })
 
 const creatingChannelAccount = async(pair: string | any) => {
     try {
-        const response = await fetch(
+        await fetch(
           `https://friendbot.stellar.org?addr=${encodeURIComponent(pair.publicKey())}`
         );
         return true;
@@ -65,4 +74,4 @@ const creatingChannelAccount = async(pair: string | any) => {
       }
 }
 
-export {getAccount, transaction }
+export { getAccount, transaction, PUBLIC_KEY }

@@ -1,6 +1,6 @@
 
 import React, { FunctionComponent } from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout } from 'antd';
 
 const { Header } = Layout;
 

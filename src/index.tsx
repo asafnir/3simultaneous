@@ -5,8 +5,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { createBrowserHistory } from 'history';
 import { Router } from 'react-router';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
 
 // prepare store
 const history = createBrowserHistory();
