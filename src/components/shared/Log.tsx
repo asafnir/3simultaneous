@@ -10,7 +10,8 @@ interface IProps {
 
 const AppHeader: FunctionComponent<IProps> = (props: any) => {
     const [transactionResults, setTransactionResults] = useState<Object[]>([]);
-    
+    const eventStream = server.transactions();
+
     var txHandler =  (txResponse: any) => {
         if (props.numberOfTransaction > transactionResults.length) {
             const tmp = transactionResults;
@@ -19,21 +20,20 @@ const AppHeader: FunctionComponent<IProps> = (props: any) => {
             setTransactionResults(prevResults => ([...prevResults, ...tmp]));
 
         } else {
-            
             eventStream();
         }
     };
     
-    const eventStream = server.transactions()
-    .forAccount(PUBLIC_KEY)
-    .cursor('now')
-    .stream({onmessage: txHandler})
+    if (props.loading) {
+        eventStream.forAccount(PUBLIC_KEY)
+        .cursor('now')
+        .stream({onmessage: txHandler})
+    }
     
     useEffect(() => {
-        console.log("updates: ", transactionResults)
+        
     }, [transactionResults]);
 
-    console.log("transactionResults: ", transactionResults)
     return <Card title="Transaction logs" style={{background: '#fff', padding: 10, border: '1px solid', minHeight: 300}}>
         {props.loading ?
             <Skeleton active />
