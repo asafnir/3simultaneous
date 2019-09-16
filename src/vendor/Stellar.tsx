@@ -4,8 +4,8 @@ const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 StellarSdk.Network.useTestNetwork();
 
 
-const PUBLIC_KEY = 'GDDV6XB7VOO72WMZ32PRGONH4ISXIAEH4M7YWAIJH2LMPZ5TU2D5VMWI';
-const SECRET_KEY = 'SBDWQNJR56IDZ7L72FY5SOKDP62MHH467QK7YMN4UM5FTXK6H3XKJZ75';
+const PUBLIC_KEY = '';
+const SECRET_KEY = '';
 
 interface transactionObject {
     destinationAccounts: String[],
