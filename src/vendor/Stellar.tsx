@@ -4,8 +4,8 @@ const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 StellarSdk.Network.useTestNetwork();
 
 
-const PUBLIC_KEY = '';
-const SECRET_KEY = '';
+const PUBLIC_KEY = 'GDDV6XB7VOO72WMZ32PRGONH4ISXIAEH4M7YWAIJH2LMPZ5TU2D5VMWI';
+const SECRET_KEY = 'SBDWQNJR56IDZ7L72FY5SOKDP62MHH467QK7YMN4UM5FTXK6H3XKJZ75';
 
 interface transactionObject {
     destinationAccounts: String[],
@@ -16,6 +16,8 @@ interface transactionObject {
 
 const transaction = async (transactionObject: transactionObject) => {
     const channelAccounts = Array();
+    const transactionResults = Array();
+
     const { destinationAccounts, amountToSend  } = transactionObject;
     const fee = await server.fetchBaseFee();
     const baseAccount = await getAccount(PUBLIC_KEY);
@@ -35,33 +37,51 @@ const transaction = async (transactionObject: transactionObject) => {
     }
     
     destinationAccounts.map( async(destinationAccount, index) => { 
-        console.log(destinationAccount)
-        var transaction = new StellarSdk.TransactionBuilder(baseAccount.id, {fee})
+        var transaction = new StellarSdk.TransactionBuilder(channelAccounts[index].account, {fee})
         .addOperation(StellarSdk.Operation.payment({
             source: baseAccount.id,
             destination: destinationAccount,
             asset: StellarSdk.Asset.native(),
             amount: amountToSend
         }))
-        .setTimeout(180)
+        .setTimeout(20)
         .build();
         
         transaction.sign(StellarSdk.Keypair.fromSecret(SECRET_KEY));
         transaction.sign(StellarSdk.Keypair.fromSecret(channelAccounts[index].secretKey));
+
+        var transactionResult = await submitTransaction(transaction);
+        transactionResults.push(transactionResult)
     });
+    
+}
+
+const submitTransaction = async (transaction: any) => {
+    try {
+        const transactionResult = await server.submitTransaction(transaction);
+        return transactionResult;
+        // console.log(JSON.stringify(transactionResult, null, 2));
+        // console.log(transactionResult._links.transaction.href);
+    } catch (e) {
+        console.log('An error has occured:');
+        console.log(e);
+    }
 }
 
 const getAccount = async (key: string) => {
     return await server.loadAccount(key);
 }
 
-// const es = server.payments()
-//   .cursor('now')
-//   .stream({
-//     onmessage: (message: any) => {
-//       console.log(message);
-//     }
+// const eventStream = server.transactions()
+//     .forAccount(PUBLIC_KEY)
+//     .cursor('now')
+//     .stream({
+//         onmessage: (message: any) => {
+//             console.log("Getting message")
+//             return message
+//         }
 // })
+
 
 const creatingChannelAccount = async(pair: string | any) => {
     try {
@@ -74,4 +94,4 @@ const creatingChannelAccount = async(pair: string | any) => {
       }
 }
 
-export { getAccount, transaction, PUBLIC_KEY }
+export { getAccount, transaction, PUBLIC_KEY, server }
